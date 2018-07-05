@@ -1,8 +1,7 @@
-
 datFile = 'alphaRawData.csv'
 ;Name of whatever data file you are analyzing goes here. Opens the file.
 
-dataSetA = READ_CSV(datFile,COUNT=numDat, HEADER=dataSetHeaders ,N_TABLE_HEADER=1)  
+dataSetA = READ_CSV(datFile, COUNT=numDat, HEADER = dummyHeader, NUM_HEADER=1, TABLE_HEADER=colHead) 
 ; Opens the datFile variable/ numDat records the number of data lines/dataSetHeaders records 
 ; the column headers as a vector of strings/ N_TABLE_HEADER defines how many lines are skipped
 ; before recording data, in this case just 1 line, the header line/
@@ -26,14 +25,14 @@ dataSetB = REPLICATE(data, numDat)
 j=0 ;Number of datasets that have the workflowID and Version necessary.
 FOR I=0,(numDat-1) DO BEGIN
   IF (dataSetA.FIELD05[I] EQ workflowID) && (dataSetA.FIELD07[I] - workflowVersion < 0.0001) THEN BEGIN
-    dataSetB[J] = {response, dataSetA.FIELD01[I], dataSetA.FIELD12[I], dataSetA.FIELD10[I]}
+    dataSetB[J] = {response, dataSetA.FIELD01[I], dataSetA.FIELD14[I], dataSetA.FIELD12[I]}
     J = J + 1
   ENDIF
 ENDFOR
-; *Special note that this check for equal doubles MUST have a better way to implement but unaware of any at this
+; *Special note that this check for equal workflowVersion MUST have a better way to implement but unaware of any at this
 ; point and time. This FOR loop includes an IF statement to select only responses that include the proper workflowID 
 ; and Version#.
-; FIELD01 == classificationID/ FIELD12 == subjectID/ FIELD10 == datString 
+; FIELD01 == classificationID/ FIELD14 == subjectID/ FIELD12 == datString(annotations in CSV file) 
 
 
 T0fullSet = REPLICATE(data, 2*numDat) ;"Mark the center of any sources...in relation to flare loops"
@@ -54,24 +53,23 @@ FOR I=0, (numDat-1) DO BEGIN
   FOR J=0, N_ELEMENTS(var) - 1 DO BEGIN
     classID = LONG(dataSetB[I].classificationID)
     subID = LONG(dataSetB[I].subjectID)
-    str = String(var[J])
-    ; All three data structure variables need to be declared so that their member functions can be
+    ; The LONG INT data structure variables need to be declared so that their member functions can be
     ; called.
     
-    IF (STRING(str.Contains('T0'))) THEN BEGIN
-      T0fullSet[A] = {classID, subID, str}
-      A = A + 1
-    ENDIF
-    IF (STRING(str.Contains('T1'))) THEN BEGIN
-      T0fullSet[B] = {classID, subID, str}
-      B = B + 1
-    ENDIF
-    IF (STRING(str.Contains('T2'))) THEN BEGIN
-      T0fullSet[C] = {classID, subID, str}
+    IF (var[J].Contains('T0') EQ 1) THEN BEGIN
+      T0fullSet[A] = {response, classID, subID, var[J]}
+      A = A + 1 
+    ENDIF  
+    IF (var[J].Contains('T1') EQ 1) THEN BEGIN
+      T1fullSet[B] = {response, classID, subID, var[J]}
+      B = B + 1 
+    ENDIF 
+    IF (var[J].Contains('T2') EQ 1) THEN BEGIN
+      T2fullSet[C] = {response, classID, subID, var[J]}
       C = C + 1
     ENDIF
-    IF (STRING(str.Contains('T3'))) THEN BEGIN
-      T0fullSet[D] = {classID, subID, str}
+    IF (var[J].Contains('T3') EQ 1) THEN BEGIN
+      T3fullSet[D] = {response, classID, subID, var[J]}
       D = D + 1
     ENDIF
   ENDFOR
