@@ -48,7 +48,7 @@ D = 0
 
 FOR I=0, (numDat-1) DO BEGIN
   var = STRSPLIT(dataSetB[I].datString, '{"task":', /REGEX, /EXTRACT)
-  ; Creates an array of Strings from every datString seperated by specific tasks. Each reslting String contains
+  ; Creates an array of Strings from every datString seperated by specific tasks. Each resulting String contains
   ; at most 1 T#.
   FOR J=0, N_ELEMENTS(var) - 1 DO BEGIN
     classID = LONG(dataSetB[I].classificationID)
