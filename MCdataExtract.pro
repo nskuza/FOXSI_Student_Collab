@@ -2,8 +2,8 @@
 
 task = 2
 ; This sets the task from readParsetoreData.pro to be anaylzed
-q = 5
-; This is where the number of questions for the task. Make sure it is equal to the length of the 'MC' and 'value' arrays.
+a = 5
+; This is the number of answers for the task. Make sure it is equal to the length of the 'MC' and 'value' arrays.
 
 MC = ['1','2','3','4 or more','0']
 ; Always define the multiple choice options here as strings. 
@@ -23,7 +23,7 @@ inputData = taskSet[task].datString
 FOR I=0, TI[task] DO BEGIN
   temp = inputData[I].Split('"value":"')
   Idat = N_ELEMENTS(temp) - 1
-  FOR J=0, q-1 DO BEGIN
+  FOR J=0, a-1 DO BEGIN
     IF(temp[Idat].Contains(MC[J]) EQ 1) THEN BEGIN
       mcArray[I] = value[J]
     ENDIF
@@ -31,7 +31,7 @@ FOR I=0, TI[task] DO BEGIN
 ENDFOR
 ; This extracts and converts the data. The string "value":" will be in every Zooniverse multiple choice response
 ; and the value, regardless of data type, will immediaely follow it.
-mcOutput = {FSET, class:taskSet[task].classificationID, subject:taskSet[task].subjectID, mcData:mcArray}
-
+mcOutput = {class:taskSet[task].classificationID, subject:taskSet[task].subjectID, mcData:mcArray}
+; Final data set produced from a Multiple Choice(MC) task. 
 
 END
